@@ -62,4 +62,40 @@ router.delete('/author/:id', async (req: Request, res: Response) => {
     }
 })
 
+router.put('/author/:id', async (req: Request, res: Response) => {
+    try{
+      const id = req.params.id;
+  
+      const author = await Author.findById(id);
+      const contactDataId = author?.contactData;
+  
+      const updatedContactData = {
+        address: req.body.contact.address,
+        phone: req.body.contact.phone,
+      };
+  
+      await ContactData.findByIdAndUpdate(
+        contactDataId, updatedContactData
+      )
+  
+      const updatedAuthor = {
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        personalCode: req.body.personalCode,
+        contactData: contactDataId
+      }
+  
+      const options = { new: true };  
+  
+      const result = await Author.findByIdAndUpdate(
+          id, updatedAuthor, options
+      ).populate("contactData")
+  
+      res.send(result)
+    }
+    catch(error){
+      res.status(500).json({message: error})
+    }
+})
+
 export default router;
