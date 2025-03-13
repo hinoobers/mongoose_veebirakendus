@@ -30,4 +30,36 @@ router.post('/author', async (req: Request, res: Response) => {
   }
 })
 
+router.get('/author', async (req: Request, res: Response) => {
+    try{
+      const data = await Author.find().populate("contactData");
+      res.json(data)
+    }
+    catch(error){
+      res.status(500).json({message: error})
+    }
+})
+  
+router.get('/author/:id', async (req: Request, res: Response) => {
+    try{
+      const data = await Author.findById(req.params.id).populate("contactData");
+      res.json(data)
+    }
+    catch(error){
+      res.status(500).json({message: error})
+    }
+})
+
+router.delete('/author/:id', async (req: Request, res: Response) => {
+    try{
+      const id = req.params.id;
+      await Author.findByIdAndDelete(id);
+      const data = await Author.find();
+      res.send(data);
+    }
+    catch(error){
+      res.status(500).json({message: error})
+    }
+})
+
 export default router;
